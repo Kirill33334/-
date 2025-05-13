@@ -1,0 +1,70 @@
+def calculate_days_to_target_weight(initial_weight, target_weight, calorie_surplus):
+    weight_diff = target_weight - initial_weight #Нач вес
+    if weight_diff == 0:
+        return 0
+    total_calories_needed = weight_diff * 7700 
+    
+    if weight_diff > 0:
+        # Набор массы 
+        days = total_calories_needed / calorie_surplus #ежедневный профицит/дефицит калорий
+    else:
+        # Похудение 
+        days = total_calories_needed / (-calorie_surplus)
+    
+    return max(0, days)
+
+def calculate_macros(weight, goal):
+    # Расчет БЖУ в граммах в зависимости от цели (набор/похудение/поддержание)
+    if goal == "набор":
+        protein = 1.8 * weight  # 1.6-2.2 г/кг для набора
+        fat = 1.2 * weight      # 1-1.5 г/кг
+        carbs = 4 * weight      # 4-7 г/кг
+    elif goal == "похудение":
+        protein = 2.2 * weight  # 2-2.4 г/кг для похудения
+        fat = 0.8 * weight      # 0.5-1 г/кг
+        carbs = 2 * weight      # 1.5-3 г/кг
+    else:  # поддержание
+        protein = 1.5 * weight  # 1.2-1.6 г/кг
+        fat = 1 * weight        # 0.8-1.2 г/кг
+        carbs = 3 * weight       # 2-4 г/кг
+    
+    return protein, fat, carbs
+
+def main():
+    print("Калькулятор питания и времени достижения целевого веса")
+    print("-----------------------------------------------------")
+    
+    try:
+        height = float(input("Введите ваш рост (в см): "))
+        initial_weight = float(input("Введите ваш текущий вес (в кг): "))
+        target_weight = float(input("Введите желаемый вес (в кг): "))
+        goal = "набор" if target_weight > initial_weight else "похудение" if target_weight < initial_weight else "поддержание"
+        
+        # Расчет БЖУ
+        protein, fat, carbs = calculate_macros(initial_weight, goal)
+        
+        # Расчет калорийности 
+        calories = protein * 4 + fat * 9 + carbs * 4
+        
+        # Расчет дней до цели 
+        calorie_surplus = 500  # стандартный профицит/дефицит 500 ккал/день
+        days = calculate_days_to_target_weight(initial_weight, target_weight, calorie_surplus)
+        
+        print("\nРезультаты:")
+        print(f"Белки: {protein:.1f} г/день")
+        print(f"Жиры: {fat:.1f} г/день")
+        print(f"Углеводы: {carbs:.1f} г/день")
+        print(f"Примерная калорийность: {calories:.0f} ккал/день")
+        
+        if days > 0:
+            print(f"\nПриблизительное время достижения цели: {days:.1f} дней (~{days/30:.1f} месяцев)")
+        else:
+            print("\nВы уже достигли целевого веса!")
+        
+        print("\nПримечание: Это приблизительные расчеты. Индивидуальные результаты могут отличаться.")
+    
+    except ValueError:
+        print("Ошибка: Введите числовые значения для роста и веса.")
+
+if __name__ == "__main__":
+    main()
